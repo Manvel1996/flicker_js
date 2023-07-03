@@ -13,18 +13,24 @@
   gap: 20px;
   padding: 20px;
   background-color: #d8fafd; }
-  .imgs-tool__form {
+  .imgs-tool .imgs-form {
     display: flex;
     width: 100%;
     height: 30px; }
-    .imgs-tool__form-search {
+    .imgs-tool .imgs-form__search {
       width: 80%;
       padding-left: 10px;
       outline: none; }
-    .imgs-tool__form-submit {
+    .imgs-tool .imgs-form__submit {
       width: 15%;
       margin-left: 5px; }
-  .imgs-tool__board {
+  .imgs-tool .title {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+  .imgs-tool .imgs-board {
     min-height: 100px;
     width: 100%;
     border: 1px dashed lightblue;
@@ -33,17 +39,20 @@
     flex-wrap: wrap;
     gap: 5px;
     row-gap: 10px; }
-    .imgs-tool__board--big {
+    .imgs-tool .imgs-board--big {
       justify-content: center; }
-    .imgs-tool__board--small {
+    .imgs-tool .imgs-board--small {
       position: relative;
-      padding-top: 20px; }
-  .imgs-tool__photo {
-    width: 100px;
-    height: 100px; }
-    .imgs-tool__photo--draggable {
-      cursor: pointer; }
-  .imgs-tool__baskets {
+      padding-top: 20px;
+      text-align: center; }
+    .imgs-tool .imgs-board__photo {
+      width: 100px;
+      height: 100px; }
+      .imgs-tool .imgs-board__photo--draggable {
+        cursor: pointer; }
+      .imgs-tool .imgs-board__photo--opacity {
+        opacity: 0.3; }
+  .imgs-tool .imgs-baskets {
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -51,22 +60,25 @@
     flex-wrap: wrap;
     min-height: 80px;
     gap: 10px; }
-    .imgs-tool__baskets-name {
+    .imgs-tool .imgs-baskets__block {
       width: 48%;
       height: 60px;
       padding: 20px;
       background-color: #0084ff;
-      border-radius: 20px;
+      border-radius: 15px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       color: white;
-      font-size: 24px; }
-  .imgs-tool--imgs-group {
+      font-size: 1.5rem; }
+      .imgs-tool .imgs-baskets__block--green {
+        background-color: green; }
+      .imgs-tool .imgs-baskets__block--red {
+        background-color: red; }
+  .imgs-tool .imgs-group__name {
     position: absolute;
-    top: 0;
-    left: 45%; }
+    top: 0; }
 
 .modal {
   display: none;
@@ -97,7 +109,7 @@
     position: absolute;
     right: 8px;
     top: 0px;
-    font-size: 28px;
+    font-size: 1.5rem;
     font-weight: bold; }
     .modal__close:hover, .modal__close:focus {
       color: #000;

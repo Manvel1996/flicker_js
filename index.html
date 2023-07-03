@@ -1,27 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-        <link rel="stylesheet" href="./css/style.css" />
-        <script src="./js/script.js" defer></script>
-    </head>
-    <body>
-        <div class="imgs-tool">
-            <form class="imgs-tool__form">
-                <input type="search" placeholder="Search" class="imgs-tool__form-search" />
-                <input type="submit" value="Search" class="imgs-tool__form-submit" />
-            </form>
-            <div class="imgs-tool__board imgs-tool__board--big"></div>
-            <div class="imgs-tool__baskets"></div>
-            <div class="imgs-tool__board imgs-tool__board--small"></div>
-        </div>
-        <div class="modal">
-            <div class="modal__content">
-                <span class="modal__close">&times;</span>
-                <p class="modal__text"></p>
-            </div>
-        </div>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flicker</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script src="./js/script.js" defer></script>
+  </head>
+  <body>
+    <div class="imgs-tool">
+      <form class="imgs-form">
+        <input type="search" placeholder="Search" class="imgs-form__search" />
+        <input type="submit" value="Search" class="imgs-form__submit" />
+      </form>
+
+      <div class="imgs-board imgs-board--big">
+        <h2 class="title">Search imgs</h2>
+      </div>
+
+      <div class="imgs-baskets"><h2 class="title">Baskets</h2></div>
+
+      <div class="imgs-board imgs-board--small">
+        <h2 class="title">Basket imgs</h2>
+      </div>
+    </div>
+
+    <div class="modal">
+      <div class="modal__content">
+        <span class="modal__close">&times;</span>
+        <p class="modal__text"></p>
+      </div>
+    </div>
+  </body>
 </html>
