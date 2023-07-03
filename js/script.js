@@ -27,21 +27,17 @@ function submit(e) {
   imgsBoard.innerHTML = "";
   basketBoard.innerHTML = "";
 
-  const imgsName = searchInput.value.trim().toLowerCase();
-  
-  const uniqueObj = {} 
-  let imgsNameArr =  imgsName.split(" ").filter(el=>{
-    if(el !== "" && !uniqueObj[el]){
-        uniqueObj[el] = null
-        return el
-    }
-  })
-//   Array.from(new Set(imgsName.split(" "))).filter(
-//     (el) => el !== ""
-//   );
-console.log(imgsNameArr);
+  const imgsName = searchInput.value.trim().toLowerCase().split(" ");
 
-  imgsNameArr.forEach((name) => {
+  const uniqueObj = {};
+
+  imgsName.forEach((el) => {
+    if (el !== "" && !uniqueObj[el]) {
+      uniqueObj[el] = null;
+    }
+  });
+
+  Object.keys(uniqueObj).forEach((name) => {
     new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
@@ -60,12 +56,17 @@ console.log(imgsNameArr);
       xhr.send();
     })
       .then((data) => {
-        let obj = {
-          title: name,
-          imgs: data.photos.photo,
-        };
+        if (data.photos.photo?.length > 0) {
+          data.photos.photo.forEach((el) => {
+            let obj = {
+              id: Date.now(),
+              title: name,
+              img: el,
+            };
 
-        searchImgs.push(obj);
+            searchImgs.push(obj);
+          });
+        }
 
         imgsCreator();
         basketNameCreator();
@@ -78,42 +79,39 @@ console.log(imgsNameArr);
 
 function imgsCreator() {
   imgsBoard.innerHTML = "";
-  let noResult = true;
 
-  searchImgs.forEach((el) => {
-    el.imgs.forEach((img) => {
+  searchImgs
+    .sort(() => Math.random() - 0.5)
+    .forEach((el) => {
       const photo = document.createElement("img");
-      const imgSrc = `http://farm${img.farm}.staticflickr.com/${img.server}/${img.id}_${img.secret}.jpg`;
-      photo.classList.add("imgs-board__photo");
-      photo.classList.add("imgs-board__photo--draggable");
+      const imgSrc = `http://farm${el.img.farm}.staticflickr.com/${el.img.server}/${el.img.id}_${el.img.secret}.jpg`;
+
+      photo.classList.add("imgs-board__photo", "imgs-board__photo--draggable");
       photo.setAttribute("src", imgSrc);
       photo.setAttribute("alt", el.title);
-      photo.setAttribute("data-id", img.id);
+      photo.setAttribute("data-id", el.img.id);
       photo.draggable = true;
 
       imgsBoard.appendChild(photo);
     });
-
-    if (el.imgs.length > 0) {
-      noResult = false;
-    }
-  });
-
-  if (noResult) {
-    openModal("No result", "red");
-  }
 }
 
 function basketNameCreator() {
   baskets.innerHTML = "";
 
+  const uniqueObj = {};
+
   searchImgs.forEach((el) => {
-    if (el.imgs.length > 0) {
-      const basketName = document.createElement("div");
-      basketName.classList.add("imgs-baskets__block");
-      basketName.innerText = el.title;
-      baskets.appendChild(basketName);
+    if (el.img && !uniqueObj[el.title]) {
+      uniqueObj[el.title] = null;
     }
+  });
+
+  Object.keys(uniqueObj).forEach((el) => {
+    const basketName = document.createElement("div");
+    basketName.classList.add("imgs-baskets__block");
+    basketName.innerText = el;
+    baskets.appendChild(basketName);
   });
 }
 
@@ -121,7 +119,7 @@ function basketImgsCreator(title) {
   basketBoard.innerHTML = "";
 
   const groupName = document.createElement("p");
-  groupName.classList.add("imgs-group__name","title");
+  groupName.classList.add("imgs-board__title", "title");
   groupName.innerText = title;
   basketBoard.appendChild(groupName);
 
@@ -137,24 +135,14 @@ function basketImgsCreator(title) {
   });
 }
 
-function imgGoBasket(title) {
-  searchImgs = searchImgs.map((obj) => {
-    if (obj.title === title) {
-      const newImgs = obj.imgs.filter((el) => el.id !== dragImg.id);
-      const newObj = {
-        title,
-        imgs: newImgs,
-      };
-      return newObj;
-    }
-    return obj;
-  });
+function imgGoBasket() {
+  searchImgs = searchImgs.filter((el) => el.img.id !== dragImg.id);
   imgsCreator();
 }
 
 function dragStart(e) {
   if (e.target !== e.currentTarget) {
-    e.target.classList.add("imgs-board__photo--opacity");;
+    e.target.classList.add("imgs-board__photo--opacity");
 
     dragImg["title"] = e.target.alt;
     dragImg["src"] = e.target.src;
@@ -197,6 +185,7 @@ function drop(e) {
       newBasketsImg["title"] = e.target.innerText;
       newBasketsImg["imgs"] = [dragImg.src];
       basketsImages.push(newBasketsImg);
+
       imgGoBasket(e.target.innerText);
       return (dragImg = {});
     }
@@ -219,11 +208,7 @@ function drop(e) {
       basketImgsCreator(e.target.innerText);
     }
 
-    let clearBoard = false;
-    searchImgs.forEach((el) => {
-      if (el.imgs.length > 0) clearBoard = true;
-    });
-    if (!clearBoard) {
+    if (!searchImgs.length) {
       openModal("YAY)))) you are a great", "green");
     }
   }

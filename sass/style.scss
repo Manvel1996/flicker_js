@@ -72,6 +72,11 @@
         opacity: 0.3;
       }
     }
+
+    &__title {
+      position: absolute;
+      top: 0;
+    }
   }
 
   .imgs-baskets {
@@ -104,11 +109,6 @@
         background-color: red;
       }
     }
-  }
-
-  .imgs-group__name {
-    position: absolute;
-    top: 0;
   }
 }
 
