@@ -77,10 +77,10 @@ function submit(e) {
   });
 }
 
-function imgsCreator(sorted) {
+function imgsCreator(random) {
   imgsBoard.innerHTML = "";
 
-  if (sorted) {
+  if (random) {
     searchImgs = searchImgs.sort(() => Math.random() - 0.5);
   }
 
