@@ -68,7 +68,7 @@ function submit(e) {
           });
         }
 
-        imgsCreator();
+        imgsCreator(true);
         basketNameCreator();
       })
       .catch(() => {
@@ -77,23 +77,25 @@ function submit(e) {
   });
 }
 
-function imgsCreator() {
+function imgsCreator(sorted) {
   imgsBoard.innerHTML = "";
 
-  searchImgs
-    .sort(() => Math.random() - 0.5)
-    .forEach((el) => {
-      const photo = document.createElement("img");
-      const imgSrc = `http://farm${el.img.farm}.staticflickr.com/${el.img.server}/${el.img.id}_${el.img.secret}.jpg`;
+  if (sorted) {
+    searchImgs = searchImgs.sort(() => Math.random() - 0.5);
+  }
 
-      photo.classList.add("imgs-board__photo", "imgs-board__photo--draggable");
-      photo.setAttribute("src", imgSrc);
-      photo.setAttribute("alt", el.title);
-      photo.setAttribute("data-id", el.img.id);
-      photo.draggable = true;
+  searchImgs.forEach((el) => {
+    const photo = document.createElement("img");
+    const imgSrc = `http://farm${el.img.farm}.staticflickr.com/${el.img.server}/${el.img.id}_${el.img.secret}.jpg`;
 
-      imgsBoard.appendChild(photo);
-    });
+    photo.classList.add("imgs-board__photo", "imgs-board__photo--draggable");
+    photo.setAttribute("src", imgSrc);
+    photo.setAttribute("alt", el.title);
+    photo.setAttribute("data-id", el.img.id);
+    photo.draggable = true;
+
+    imgsBoard.appendChild(photo);
+  });
 }
 
 function basketNameCreator() {
