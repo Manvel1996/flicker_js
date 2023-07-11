@@ -21,7 +21,9 @@ function reset() {
   searchImgs = [];
   basketNames = [];
   basketsImages = [];
+
   openBasket = "";
+
   baskets.innerHTML = "";
   imagesBoard.innerHTML = "";
   basketBoard.innerHTML = "";
@@ -60,7 +62,6 @@ function submit(e) {
         if (data.photos.photo?.length > 0) {
           data.photos.photo.forEach((el) => {
             let obj = {
-              // id: Date.now() + Math.random() * 15,
               title: name,
               img: el,
             };
@@ -98,6 +99,9 @@ function imagesCreator(random) {
     photo.setAttribute("data-id", el.img.id);
     photo.draggable = true;
 
+    photo.addEventListener("dragstart", dragStart);
+    photo.addEventListener("dragend", dragend);
+
     imagesBoard.appendChild(photo);
   });
 }
@@ -123,7 +127,27 @@ function basketButtonCreator() {
   basketsNames.forEach((el) => {
     const basketButton = document.createElement("div");
     basketButton.classList.add("images-baskets__block");
+    basketButton.setAttribute("data-title", el);
     basketButton.innerText = el;
+
+    basketButton.addEventListener("dragleave", dragLeave);
+    basketButton.addEventListener("dragover", dragOver);
+    basketButton.addEventListener("drop", drop);
+
+    basketButton.addEventListener("click", (e) => {
+      const title = e.target.getAttribute("data-title");
+
+      if (openBasket === "") {
+        openBasket = title;
+      } else if (openBasket === title) {
+        openBasket = "";
+        basketBoard.innerHTML = "";
+        return;
+      } else openBasket = title;
+
+      basketImagesCreator(title);
+    });
+
     baskets.appendChild(basketButton);
   });
 }
@@ -154,29 +178,26 @@ function imgGoBasket() {
 }
 
 function dragStart(e) {
-  if (e.target !== e.currentTarget) {
-    e.target.classList.add("images-board__photo--opacity");
+  e.target.classList.add("images-board__photo--opacity");
 
-    dragImg["title"] = e.target.alt;
-    dragImg["src"] = e.target.src;
-    dragImg["id"] = e.target.getAttribute("data-id");
-  }
+  dragImg["title"] = e.target.alt;
+  dragImg["src"] = e.target.src;
+  dragImg["id"] = e.target.getAttribute("data-id");
 }
 
 function dragLeave(e) {
-  if (e.target !== e.currentTarget) {
-    e.target.classList.remove("images-baskets__block--green");
-    e.target.classList.remove("images-baskets__block--red");
-  }
+  e.target.classList.remove(
+    "images-baskets__block--green",
+    "images-baskets__block--red"
+  );
 }
 
 function dragOver(e) {
   e.preventDefault();
-  if (e.target !== e.currentTarget) {
-    if (e.target.innerText === dragImg.title) {
-      e.target.classList.add("images-baskets__block--green");
-    } else e.target.classList.add("images-baskets__block--red");
-  }
+
+  if (e.target.innerText === dragImg.title) {
+    e.target.classList.add("images-baskets__block--green");
+  } else e.target.classList.add("images-baskets__block--red");
 }
 
 function dragend(e) {
@@ -185,45 +206,52 @@ function dragend(e) {
 
 function drop(e) {
   e.preventDefault();
-  if (e.target !== e.currentTarget) {
-    e.target.classList.remove("images-baskets__block--red");
-    e.target.classList.remove("images-baskets__block--green");
 
-    if (dragImg.title !== e.target.innerText) return (dragImg = {});
+  e.target.classList.remove(
+    "images-baskets__block--red",
+    "images-baskets__block--green"
+  );
 
-    const obj = basketsImages.find((el) => el.title === e.target.innerText);
-    const newBasketsImg = {};
+  const title = e.target.getAttribute("data-title");
 
-    if (basketsImages.length === 0 || !obj) {
-      newBasketsImg["title"] = e.target.innerText;
-      newBasketsImg["imgs"] = [dragImg.src];
-      basketsImages.push(newBasketsImg);
-
-      imgGoBasket(e.target.innerText);
-      return (dragImg = {});
-    }
-
-    basketsImages = basketsImages.map((el) => {
-      if (el.title === e.target.innerText) {
-        const obj = {
-          title: e.target.innerText,
-          imgs: [...el.imgs, dragImg.src],
-        };
-        return obj;
-      }
-      return el;
-    });
-
-    imgGoBasket(e.target.innerText);
+  if (dragImg.title !== title) {
     dragImg = {};
+    return;
+  }
 
-    if (openBasket === e.target.innerText) {
-      basketImagesCreator(e.target.innerText);
-    }
+  const findImage = basketsImages.find((el) => el.title === title);
+  const newBasketsImage = {};
 
-    if (!searchImgs.length) {
-      openModal("YAY)))) you are a great", "green");
+  if (basketsImages.length === 0 || !findImage) {
+    newBasketsImage["title"] = title;
+    newBasketsImage["imgs"] = [dragImg.src];
+    basketsImages.push(newBasketsImage);
+
+    imgGoBasket(title);
+    dragImg = {};
+    return;
+  }
+
+  basketsImages = basketsImages.map((el) => {
+    if (el.title === title) {
+      const findImage = {
+        title,
+        imgs: [...el.imgs, dragImg.src],
+      };
+      return findImage;
     }
+    return el;
+  });
+
+  imgGoBasket(title);
+  dragImg = {};
+
+  if (openBasket === title) {
+    basketImagesCreator(title);
+  }
+
+  if (!searchImgs.length) {
+    openModal("YAY)))) you are a great", "green");
   }
 }
 
@@ -233,34 +261,16 @@ function openModal(text, color) {
   modalText.style.color = color;
 }
 
-modalClose.addEventListener("click", () => {
+function closeModal() {
   modal.style.display = "none";
-});
+}
+
+modalClose.addEventListener("click", closeModal);
 
 window.addEventListener("click", (event) => {
   if (event.target === modal) {
-    modal.style.display = "none";
+    closeModal();
   }
 });
 
 searchForm.addEventListener("submit", submit);
-
-imagesBoard.addEventListener("dragstart", dragStart);
-imagesBoard.addEventListener("dragend", dragend);
-
-baskets.addEventListener("dragleave", dragLeave);
-baskets.addEventListener("dragover", dragOver);
-baskets.addEventListener("drop", drop);
-
-baskets.addEventListener("click", (e) => {
-  if (e.target !== e.currentTarget) {
-    if (openBasket === "") {
-      openBasket = e.target.innerText;
-    } else if (openBasket === e.target.innerText) {
-      openBasket = "";
-      basketBoard.innerHTML = "";
-      return;
-    } else openBasket = e.target.innerText;
-    basketImagesCreator(e.target.innerText);
-  }
-});
